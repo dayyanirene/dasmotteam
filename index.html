@@ -112,7 +112,7 @@
                     </div>
 
                     <nav id="sidebar-menu" class="space-y-1">
-                        </nav>
+                    </nav>
                 </div>
 
                 <div class="border-t border-slate-200 dark:border-slate-800 pt-4 flex flex-col gap-3">
@@ -155,11 +155,40 @@
                 </header>
 
                 <div id="content-view" class="p-4 md:p-6 flex-1 max-w-7xl w-full mx-auto space-y-6">
-                    </div>
+                </div>
             </main>
 
             <nav id="bottom-nav" class="md:hidden fixed bottom-0 left-0 right-0 glass dark:glass border-t border-slate-200 dark:border-slate-800 flex justify-around py-2 z-40">
-                </nav>
+            </nav>
+        </div>
+    </div>
+
+    <div id="add-staff-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl shadow-2xl p-6 space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+                <h3 class="font-bold text-lg text-slate-800 dark:text-slate-100">Tambah Staf Baharu</h3>
+                <button onclick="closeAddStaffModal()" class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full flex items-center justify-center">
+                    <span class="material-symbols-rounded">close</span>
+                </button>
+            </div>
+            <div class="space-y-3 text-xs md:text-sm">
+                <div>
+                    <label class="block text-xs font-medium text-slate-500 mb-1">Nama Penuh</label>
+                    <input type="text" id="staff-name" placeholder="Contoh: Muhammad Ali" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-500 mb-1">Jabatan / Bahagian</label>
+                    <input type="text" id="staff-dept" placeholder="Contoh: Sumber Manusia" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-500 mb-1">Gred / Jawatan</label>
+                    <input type="text" id="staff-grade" placeholder="Contoh: Gred M4" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+            </div>
+            <div class="pt-2 flex gap-3">
+                <button onclick="closeAddStaffModal()" class="flex-1 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-semibold rounded-xl text-xs transition">Batal</button>
+                <button onclick="simpanStafBaharu()" class="flex-1 py-2 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-xl text-xs shadow-md transition">Simpan Staf</button>
+            </div>
         </div>
     </div>
 
@@ -269,6 +298,9 @@
             claims: [
                 { id: 101, type: 'Petrol', amount: 'RM 85.00', date: '2026-06-25', status: 'Diluluskan' },
                 { id: 102, type: 'Parking', amount: 'RM 12.00', date: '2026-06-28', status: 'Dalam Proses' }
+            ],
+            staffs: [
+                { id: 1, name: 'Khairul Anwar', dept: 'Jabatan Operasi', grade: 'Gred M4', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=100&auto=format&fit=crop' }
             ]
         };
 
@@ -366,20 +398,21 @@
             const sidebarContainer = document.getElementById('sidebar-menu');
             const bottomContainer = document.getElementById('bottom-nav');
             
-            sidebarContainer.innerHTML = '';
-            bottomContainer.innerHTML = '';
+            if (sidebarContainer) sidebarContainer.innerHTML = '';
+            if (bottomContainer) bottomContainer.innerHTML = '';
             
             currentMenus.forEach(menu => {
                 // Render Sidebar Layout Template
-                const sbBtn = document.createElement('button');
-                sbBtn.className = `w-full flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm text-left transition ${window.state.currentView === menu.id ? 'bg-brand-500 text-white shadow-md' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}`;
-                sbBtn.innerHTML = `<span class="material-symbols-rounded text-xl">${menu.icon}</span> ${menu.label}`;
-                sbBtn.onclick = () => navigateTo(menu.id);
-                sidebarContainer.appendChild(sbBtn);
+                if (sidebarContainer) {
+                    const sbBtn = document.createElement('button');
+                    sbBtn.className = `w-full flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm text-left transition ${window.state.currentView === menu.id ? 'bg-brand-500 text-white shadow-md' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}`;
+                    sbBtn.innerHTML = `<span class="material-symbols-rounded text-xl">${menu.icon}</span> ${menu.label}`;
+                    sbBtn.onclick = () => navigateTo(menu.id);
+                    sidebarContainer.appendChild(sbBtn);
+                }
                 
                 // Render Bottom Bar Layout for smartphone mobile UI architecture constraint
-                // Render only first 4 tracking menus for mobile clarity view space
-                if (currentMenus.indexOf(menu) < 4) {
+                if (bottomContainer && currentMenus.indexOf(menu) < 4) {
                     const bbBtn = document.createElement('button');
                     bbBtn.className = `flex flex-col items-center gap-0.5 text-center flex-1 py-1 ${window.state.currentView === menu.id ? 'text-brand-500 font-semibold' : 'text-slate-400'}`;
                     bbBtn.innerHTML = `<span class="material-symbols-rounded text-xl">${menu.icon}</span><span class="text-[10px]">${menu.label.split(' ')[0]}</span>`;
@@ -389,11 +422,13 @@
             });
             
             // Add a permanent profile settings configuration button for cross compatibility
-            const chatBbBtn = document.createElement('button');
-            chatBbBtn.className = 'flex flex-col items-center gap-0.5 text-center flex-1 py-1 text-slate-400';
-            chatBbBtn.innerHTML = '<span class="material-symbols-rounded text-xl">forum</span><span class="text-[10px]">Mesej</span>';
-            chatBbBtn.onclick = () => document.getElementById('chat-modal').classList.remove('hidden');
-            bottomContainer.appendChild(chatBbBtn);
+            if (bottomContainer) {
+                const chatBbBtn = document.createElement('button');
+                chatBbBtn.className = 'flex flex-col items-center gap-0.5 text-center flex-1 py-1 text-slate-400';
+                chatBbBtn.innerHTML = '<span class="material-symbols-rounded text-xl">forum</span><span class="text-[10px]">Mesej</span>';
+                chatBbBtn.onclick = () => document.getElementById('chat-modal').classList.remove('hidden');
+                bottomContainer.appendChild(chatBbBtn);
+            }
         }
 
         window.navigateTo = function(viewId) {
@@ -593,22 +628,25 @@
             
             // Build dynamic javascript visual graphics with delay interval cycle loop safely
             setTimeout(() => {
-                const ctx = document.getElementById('employerChart').getContext('2d');
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: ['Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat'],
-                        datasets: [{
-                            label: 'Kadar Peratusan Hadir %',
-                            data: [96, 94, 98, 92, 89],
-                            borderColor: '#1565C0',
-                            backgroundColor: 'rgba(21, 101, 192, 0.1)',
-                            fill: true,
-                            tension: 0.3
-                        }]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false }
-                });
+                const chartCanvas = document.getElementById('employerChart');
+                if (chartCanvas) {
+                    const ctx = chartCanvas.getContext('2d');
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: ['Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat'],
+                            datasets: [{
+                                label: 'Kadar Peratusan Hadir %',
+                                data: [96, 94, 98, 92, 89],
+                                borderColor: '#1565C0',
+                                backgroundColor: 'rgba(21, 101, 192, 0.1)',
+                                fill: true,
+                                tension: 0.3
+                            }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false }
+                    });
+                }
             }, 100);
         }
 
@@ -676,397 +714,4 @@
                     <div class="p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 text-center space-y-4">
                         <h3 class="font-bold text-sm text-left">Pilih Pilihan Tindakan Anda</h3>
                         <div class="grid grid-cols-2 gap-4">
-                            <button onclick="simpanKehadiran('Clock In')" class="p-6 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 rounded-2xl hover:scale-[1.02] transition flex flex-col items-center gap-2">
-                                <span class="material-symbols-rounded text-3xl">login</span>
-                                <span class="font-bold text-sm">Clock In</span>
-                                <span class="text-[10px] opacity-70">Sesi Mula Kerja</span>
-                            </button>
-                            <button onclick="simpanKehadiran('Clock Out')" class="p-6 bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 rounded-2xl hover:scale-[1.02] transition flex flex-col items-center gap-2">
-                                <span class="material-symbols-rounded text-3xl">logout</span>
-                                <span class="font-bold text-sm">Clock Out</span>
-                                <span class="text-[10px] opacity-70">Sesi Tamat Kerja</span>
-                            </button>
-                        </div>
-                        <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-around text-xs text-slate-500">
-                            <button onclick="alert('Rehat Dimulakan')" class="hover:text-brand-500 flex items-center gap-1"><span class="material-symbols-rounded text-sm">coffee</span> Mula Rehat</button>
-                            <button onclick="alert('Rehat Tamat')" class="hover:text-brand-500 flex items-center gap-1"><span class="material-symbols-rounded text-sm">work</span> Tamat Rehat</button>
-                        </div>
-                    </div>
-
-                    <div class="p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800">
-                        <h3 class="font-bold text-sm mb-3">Log Kehadiran Semasa (Realtime Firestore Sync)</h3>
-                        <div class="space-y-3" id="log-kehadiran-list">
-                            </div>
-                    </div>
-                </div>
-            `;
-            refreshKehadiranLogs();
-        }
-
-        window.simpanKehadiran = function(jenis) {
-            const masaSekarang = new Date().toLocaleTimeString('ms-MY', { hour: '2-digit', minute: '2-digit' });
-            const tarikhHariIni = new Date().toISOString().split('T')[0];
-            
-            window.state.attendanceLog.unshift({
-                date: tarikhHariIni,
-                checkIn: jenis === 'Clock In' ? masaSekarang : '08:45 AM',
-                checkOut: jenis === 'Clock Out' ? masaSekarang : '--:--',
-                status: 'Swa-Foto Verified'
-            });
-            
-            alert(`Berjaya melakukan ${jenis} pada jam ${masaSekarang} menggunakan Sistem Face-ID & Geofencing.`);
-            refreshKehadiranLogs();
-        };
-
-        function refreshKehadiranLogs() {
-            const container = document.getElementById('log-kehadiran-list');
-            if (container) {
-                container.innerHTML = window.state.attendanceLog.map(log => `
-                    <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl flex justify-between items-center text-xs">
-                        <div>
-                            <p class="font-bold">${log.date}</p>
-                            <p class="text-slate-400">Masuk: ${log.checkIn} | Keluar: ${log.checkOut}</p>
-                        </div>
-                        <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400 font-medium rounded text-[10px]">${log.status}</span>
-                    </div>
-                `).join('');
-            }
-        }
-
-        function renderCutiModule(container) {
-            container.innerHTML = `
-                <h2 class="text-xl font-bold">Sistem Pengurusan Cuti Digital</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 md:col-span-1 space-y-4">
-                        <h3 class="font-bold text-sm">Borang Permohonan Cuti</h3>
-                        <div>
-                            <label class="block text-xs text-slate-400 mb-1">Jenis Cuti</label>
-                            <select id="leave-type" class="w-full p-2 text-sm bg-slate-50 dark:bg-slate-800 rounded-xl focus:outline-none border border-slate-200 dark:border-slate-700">
-                                <option>Cuti Tahunan (Annual Leave)</option>
-                                <option>Cuti Sakit (Medical Leave)</option>
-                                <option>Cuti Kecemasan (Emergency Leave)</option>
-                                <option>Cuti Tanpa Gaji (Unpaid Leave)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs text-slate-400 mb-1">Tarikh Mula</label>
-                            <input type="date" id="leave-date" class="w-full p-2 text-sm bg-slate-50 dark:bg-slate-800 rounded-xl focus:outline-none border border-slate-200 dark:border-slate-700">
-                        </div>
-                        <button onclick="mohonCutiKakitangan()" class="w-full py-2 bg-brand-500 text-white text-xs font-bold rounded-xl shadow hover:bg-brand-600 transition">Hantar Borang Cuti</button>
-                    </div>
-
-                    <div class="p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 md:col-span-2">
-                        <h3 class="font-bold text-sm mb-4">Rekod Sejarah & Status Permohonan Cuti</h3>
-                        <div class="space-y-3" id="sejarah-cuti-list"></div>
-                    </div>
-                </div>
-            `;
-            refreshCutiList();
-        }
-
-        window.mohonCutiKakitangan = function() {
-            const tipe = document.getElementById('leave-type').value;
-            const tgl = document.getElementById('leave-date').value || '2026-07-10';
-            
-            window.state.leaves.unshift({
-                id: Date.now(),
-                type: tipe,
-                date: tgl,
-                duration: '1 Hari',
-                status: 'Dalam Proses'
-            });
-            
-            alert('Permohonan cuti anda berjaya dihantar ke Cloud Firestore dan sedang menanti kelulusan majikan.');
-            refreshCutiList();
-        };
-
-        function refreshCutiList() {
-            const container = document.getElementById('sejarah-cuti-list');
-            if (container) {
-                container.innerHTML = window.state.leaves.map(l => `
-                    <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl flex justify-between items-center text-xs">
-                        <div>
-                            <p class="font-bold">${l.type}</p>
-                            <p class="text-slate-400">Tarikh: ${l.date} (${l.duration})</p>
-                        </div>
-                        <span class="px-2 py-0.5 ${l.status === 'Diluluskan' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'} font-semibold rounded text-[10px]">${l.status}</span>
-                    </div>
-                `).join('');
-            }
-        }
-
-        function renderClaimsModule(container) {
-            container.innerHTML = `
-                <h2 class="text-xl font-bold">Modul Tuntutan Kos & Claims (AI Scan Integrated)</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-3">
-                        <h3 class="font-bold text-sm">Borang Tuntutan Baharu</h3>
-                        <div>
-                            <label class="block text-xs text-slate-400">Kategori Tuntutan</label>
-                            <select id="claim-category" class="w-full p-2 bg-slate-50 dark:bg-slate-800 text-xs rounded-xl border border-slate-200 dark:border-slate-700">
-                                <option>Petrol & Mileage</option>
-                                <option>Parking & Tol</option>
-                                <option>Perubatan (Medical)</option>
-                                <option>Makanan & Hotel</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs text-slate-400">Jumlah Tuntutan (RM)</label>
-                            <input type="number" id="claim-amount" placeholder="0.00" class="w-full p-2 bg-slate-50 dark:bg-slate-800 text-xs rounded-xl border border-slate-200 dark:border-slate-700">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-slate-400">Muat Naik Resit (AI Detection Scanner)</label>
-                            <div onclick="alert('Kamera diaktifkan untuk mengimbas resit...')" class="border-2 border-dashed border-slate-200 dark:border-slate-700 p-4 rounded-xl text-center cursor-pointer text-slate-400 hover:text-brand-500 transition">
-                                <span class="material-symbols-rounded text-2xl">photo_camera</span>
-                                <p class="text-[11px] mt-1">Klik untuk ambil gambar resit</p>
-                            </div>
-                        </div>
-                        <button onclick="hantarClaimSyarikat()" class="w-full py-2 bg-brand-500 text-white font-bold text-xs rounded-xl">Hantar Tuntutan</button>
-                    </div>
-                    
-                    <div class="p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 md:col-span-2">
-                        <h3 class="font-bold text-sm mb-4">Senarai Rekod Kos Tuntutan</h3>
-                        <div class="space-y-3" id="claim-list-box"></div>
-                    </div>
-                </div>
-            `;
-            refreshClaimListBox();
-        }
-
-        window.hantarClaimSyarikat = function() {
-            const amt = document.getElementById('claim-amount').value || '50';
-            const cat = document.getElementById('claim-category').value;
-            
-            window.state.claims.unshift({
-                id: Date.now(),
-                type: cat,
-                amount: `RM ${parseFloat(amt).toFixed(2)}`,
-                date: new Date().toISOString().split('T')[0],
-                status: 'Dalam Proses'
-            });
-            alert('Tuntutan dihantar. AI mengesahkan tiada data resit pendua (Duplicated receipt logs check: passed).');
-            refreshClaimListBox();
-        };
-
-        function refreshClaimListBox() {
-            const container = document.getElementById('claim-list-box');
-            if (container) {
-                container.innerHTML = window.state.claims.map(c => `
-                    <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl flex justify-between items-center text-xs">
-                        <div>
-                            <p class="font-bold text-slate-700 dark:text-slate-200">${c.type} - <span class="text-brand-500">${c.amount}</span></p>
-                            <p class="text-[10px] text-slate-400">Tarikh Fail: ${c.date}</p>
-                        </div>
-                        <span class="px-2 py-0.5 bg-slate-200 text-slate-800 rounded text-[9px] font-bold">${c.status}</span>
-                    </div>
-                `).join('');
-            }
-        }
-
-        function renderPayslipModule(container) {
-            container.innerHTML = `
-                <h2 class="text-xl font-bold">Penyata Gaji Elektronik (e-Payslip)</h2>
-                <p class="text-xs text-slate-400">Bulan Semasa: Jun 2026 (Mata Wang Berkanun: RM - Ringgit Malaysia)</p>
-                
-                <div class="p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 max-w-2xl">
-                    <div class="border-b border-slate-100 dark:border-slate-800 pb-4 mb-4 flex justify-between items-center">
-                        <div>
-                            <h3 class="font-bold text-base text-brand-600">DASMOT TEAM SDN BHD</h3>
-                            <p class="text-[11px] text-slate-400">Penyata Gaji Kakitangan Rasmi</p>
-                        </div>
-                        <button onclick="alert('Memuat turun PDF Penyata Gaji...')" class="px-3 py-1 bg-brand-500 text-white rounded-lg text-xs font-bold flex items-center gap-1"><span class="material-symbols-rounded text-sm">download</span> Muat Turun PDF</button>
-                    </div>
-
-                    <div class="space-y-2 text-xs">
-                        <div class="flex justify-between py-1 border-b border-slate-50 dark:border-slate-800"><span class="text-slate-400">Gaji Pokok / Asas (Basic Salary)</span><span class="font-bold">RM 3,500.00</span></div>
-                        <div class="flex justify-between py-1 border-b border-slate-50 dark:border-slate-800"><span class="text-slate-400">Elaun Tetap Pengangkutan</span><span class="font-bold text-emerald-500">+ RM 300.00</span></div>
-                        <div class="flex justify-between py-1 border-b border-slate-50 dark:border-slate-800"><span class="text-slate-400">Potongan KWSP (EPF 11%)</span><span class="font-bold text-rose-500">- RM 385.00</span></div>
-                        <div class="flex justify-between py-1 border-b border-slate-50 dark:border-slate-800"><span class="text-slate-400">Potongan PERKESO (SOCSO)</span><span class="font-bold text-rose-500">- RM 19.75</span></div>
-                        <div class="flex justify-between py-1 border-b border-slate-50 dark:border-slate-800"><span class="text-slate-400">Potongan SIP (EIS)</span><span class="font-bold text-rose-500">- RM 7.90</span></div>
-                        <div class="flex justify-between py-1 border-b border-slate-50 dark:border-slate-800"><span class="text-slate-400">Cukai Berjadual (PCB)</span><span class="font-bold text-rose-500">- RM 45.00</span></div>
-                        <div class="flex justify-between py-3 font-bold text-sm text-brand-600 border-t border-dashed mt-4"><span class="text-slate-800 dark:text-slate-100">Gaji Bersih (Net Take-Home Pay)</span><span>RM 3,342.35</span></div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderTasksModule(container) {
-            container.innerHTML = `
-                <h2 class="text-xl font-bold">Senarai Tugasan & KPI Projek</h2>
-                <div class="p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 max-w-xl space-y-3">
-                    <h3 class="font-bold text-sm">Tugasan Aktif Anda</h3>
-                    <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl flex items-center justify-between text-xs">
-                        <div class="flex items-center gap-2">
-                            <span class="material-symbols-rounded text-amber-500">radio_button_unchecked</span>
-                            <div><p class="font-bold">Kemaskini Profil KYC Cloud Firestore</p><p class="text-slate-400">Masa Tamat: Hari Ini, 18:00</p></div>
-                        </div>
-                        <span class="px-2 py-0.5 bg-amber-100 text-amber-800 text-[10px] font-bold rounded">UTAMA</span>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderDocumentsModule(container) {
-            container.innerHTML = `
-                <h2 class="text-xl font-bold">Perpustakaan SOP & Dokumen Syarikat</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl flex items-center justify-between text-xs">
-                        <div class="flex items-center gap-3">
-                            <span class="material-symbols-rounded text-3xl text-brand-500">picture_as_pdf</span>
-                            <div><p class="font-bold">Buku Panduan Pekerja 2026.pdf</p><p class="text-slate-400">Saiz: 4.2 MB | Dikemaskini Jan 2026</p></div>
-                        </div>
-                        <button onclick="alert('Pratonton Dokumen PDF diaktifkan...')" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full flex items-center justify-center"><span class="material-symbols-rounded text-lg">visibility</span></button>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderUrusPekerjaModule(container) {
-            container.innerHTML = `
-                <div class="flex justify-between items-center">
-                    <h2 class="text-xl font-bold">Pengurusan Fail & Rekod Staf Syarikat</h2>
-                    <button onclick="alert('Borang Tambah Staf Baharu diaktifkan...')" class="px-3 py-1.5 bg-brand-500 text-white rounded-xl text-xs font-bold flex items-center gap-1"><span class="material-symbols-rounded text-sm">person_add</span> Tambah Staf</button>
-                </div>
-                <div class="p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800">
-                    <div class="space-y-3">
-                        <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl flex justify-between items-center text-xs">
-                            <div class="flex items-center gap-3">
-                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=100&auto=format&fit=crop" class="w-8 h-8 rounded-full object-cover">
-                                <div><p class="font-bold">Khairul Anwar</p><p class="text-slate-400">Jabatan Operasi | Gred M4</p></div>
-                            </div>
-                            <div class="flex gap-1">
-                                <button onclick="alert('Edit')" class="px-2 py-1 bg-slate-200 text-slate-800 rounded text-[10px]">Edit</button>
-                                <button onclick="alert('Padam')" class="px-2 py-1 bg-rose-500 text-white rounded text-[10px]">Gantung</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderSahkanCutiModule(container) {
-            container.innerHTML = `
-                <h2 class="text-xl font-bold">Portal Kelulusan Cuti Tahunan/Sakit Kakitangan</h2>
-                <div class="p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-4">
-                    <div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl flex justify-between items-center text-xs">
-                        <div>
-                            <p class="font-bold text-sm">Ahmad Shahril Bin Ismail</p>
-                            <p class="text-slate-500 mt-0.5">Memohon: Cuti Sakit (Medical Leave) | Tarikh: 02 Julai 2026</p>
-                            <p class="text-brand-500 font-semibold mt-1">Sebab: Demam Panas & Selesema (Sijil Sakit / MC dilampirkan)</p>
-                        </div>
-                        <div class="flex flex-col gap-1.5 shrink-0">
-                            <button onclick="alert('Cuti Kakitangan Diluluskan.'); navigateTo('dashboard');" class="px-3 py-1.5 bg-emerald-500 text-white font-bold rounded-lg text-[11px]">Sahkan Cuti</button>
-                            <button onclick="alert('Cuti Kakitangan Ditolak.'); navigateTo('dashboard');" class="px-3 py-1.5 bg-rose-500 text-white font-bold rounded-lg text-[11px]">Tolak / Reject</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderUrusSyarikatModule(container) {
-            container.innerHTML = `
-                <h2 class="text-xl font-bold">Sistem Kawalan Pengesahan Klien Korporat B2B</h2>
-                <p class="text-xs text-slate-400">Menu pemantauan global super admin untuk mengaktifkan atau menggantung lesen langganan syarikat klien.</p>
-                
-                <div class="p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-3">
-                    <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl flex justify-between items-center text-xs">
-                        <div>
-                            <p class="font-bold text-sm">Malayan Banking Corporate Suite</p>
-                            <p class="text-slate-400">Kemasukan: 12 Syarikat Berdaftar di bawah Kumpulan</p>
-                        </div>
-                        <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 font-bold rounded text-[10px]">LESEN AKTIF</span>
-                    </div>
-                </div>
-            `;
-        }
-
-        // --- CORE APPLICATION INTERACTION HANDLERS ---
-        
-        window.toggleDarkMode = function() {
-            const isDark = document.documentElement.classList.toggle('dark');
-            localStorage.setItem('darkMode', isDark);
-            document.getElementById('theme-icon').innerText = isDark ? 'light_mode' : 'dark_mode';
-        };
-
-        window.triggerAIChat = function() {
-            document.getElementById('ai-modal').classList.remove('hidden');
-        };
-
-        window.closeAIModal = function() {
-            document.getElementById('ai-modal').classList.add('hidden');
-        };
-
-        window.sendAIChat = function() {
-            const input = document.getElementById('ai-input');
-            const box = document.getElementById('ai-chat-history');
-            
-            if (!input.value.trim()) return;
-            
-            // Render user dialogue chat bubble
-            const userDiv = document.createElement('div');
-            userDiv.className = 'flex gap-2 items-start justify-end max-w-[90%] ml-auto flex-row-reverse';
-            userDiv.innerHTML = `
-                <div class="bg-brand-500 text-white p-3 rounded-2xl rounded-tr-none">
-                    <p class="font-bold text-xs text-white/90 mb-0.5">Anda</p>
-                    <p>${input.value}</p>
-                </div>
-            `;
-            box.appendChild(userDiv);
-            
-            // Build automated semantic logic response mockup simulating backend response engine
-            const promptValue = input.value.toLowerCase();
-            input.value = '';
-            
-            setTimeout(() => {
-                const aiDiv = document.createElement('div');
-                aiDiv.className = 'flex gap-2 items-start bg-slate-50 dark:bg-slate-800/50 p-3 rounded-2xl';
-                
-                let responseText = "Maaf, saya sedang memproses pangkalan data Firestore. Boleh anda spesifikkan soalan mengenai modul cuti atau perbatuan?";
-                if (promptValue.includes('cuti')) {
-                    responseText = "Analisis AI Cuti: Trend menunjukkan permohonan cuti meningkat menjelang minggu pertama Julai 2026 bersempena cuti persekolahan. Disyorkan pengurus menyemak kuota pasukan.";
-                } else if (promptValue.includes('gaji') || promptValue.includes('payroll')) {
-                    responseText = "Analisis AI Payroll: Tiada ralat pematuhan PCB dikesan untuk kitaran bulan Jun 2026. Semua sumbangan caruman KWSP & SOCSO berada di landasan yang betul.";
-                }
-                
-                aiDiv.innerHTML = `
-                    <span class="material-symbols-rounded text-brand-500 mt-0.5">smart_toy</span>
-                    <div>
-                        <p class="font-semibold text-brand-600 mb-0.5">Dasmot AI</p>
-                        <p>${responseText}</p>
-                    </div>
-                `;
-                box.appendChild(aiDiv);
-                box.scrollTop = box.scrollHeight;
-            }, 700);
-        };
-
-        window.sendLiveChatMessage = function() {
-            const input = document.getElementById('chat-input-field');
-            const box = document.getElementById('chat-messages-box');
-            if(!input.value.trim()) return;
-            
-            const msgDiv = document.createElement('div');
-            msgDiv.className = 'flex gap-2 items-start max-w-[80%] ml-auto flex-row-reverse';
-            msgDiv.innerHTML = `
-                <div class="bg-brand-500 text-white p-3 rounded-2xl rounded-tr-none">
-                    <p>${input.value}</p>
-                    <span class="text-[9px] text-white/70 block text-right mt-1">Baru Sahaja ✓✓</span>
-                </div>
-            `;
-            box.appendChild(msgDiv);
-            input.value = '';
-            box.scrollTop = box.scrollHeight;
-        };
-
-        window.openNotificationModal = function() {
-            alert("Notifikasi Sistem Dasmot Team:\n\n1. Pengumuman SOP Baharu dimuat naik oleh Majikan.\n2. Slip Gaji bulan Jun 2026 sedia untuk disemak.");
-        };
-
-        window.simulateOAuth = function(provider) {
-            alert(`Menghubungkan ke SDK Firebase Auth untuk kelulusan log masuk rangkaian ${provider}...`);
-            window.bypassAuth('pekerja');
-        };
-
-    </script>
-</body>
-</html>
+                            <button onclick="simpanKehadiran('Clock In')" class="p-6 bg
