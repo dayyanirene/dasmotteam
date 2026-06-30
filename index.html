@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ms" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dasmot Team - Sistem Pengurusan Kerja Pintar Malaysia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563EB',
+                        success: '#22C55E',
+                        warning: '#EF4444',
+                        darkBg: '#0F172A',
+                        darkCard: '#1E293B'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; transition: background-color 0.3s, color 0.3s; }
+        .skeleton { background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%); background-size: 200% 100%; animation: loading 1.5s infinite; }
+        .dark .skeleton { background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%); background-size: 200% 100%; }
+        @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100 min-h-screen flex flex-col">
+
+    <header class="bg-white dark:bg-darkCard border-b border-gray-200 dark:border-slate-700 sticky top-0 z-50 px-4 py-3 flex items-center justify-between shadow-sm">
+        <div class="flex items-center space-x-3">
+            <div class="bg-primary p-2 rounded-xl text-white font-bold flex items-center justify-center shadow-lg shadow-blue-500/30">
+                <i class="fa-solid fa-people-roof text-xl"></i>
+            </div>
+            <div>
+                <h1 class="text-lg font-bold tracking-tight text-gray-900 dark:text-white">Dasmot<span class="text-primary">Team</span></h1>
+                <p class="text-xs text-gray-500 dark:text-gray-400">Malaysia Compliance HR Ecosystem</p>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-3">
+            <select id="langSelect" onchange="changeLanguage(this.value)" class="bg-gray-100 dark:bg-slate-800 text-xs rounded-lg p-2 border-none focus:ring-2 focus:ring-primary">
+                <option value="ms">Bahasa Melayu</option>
+                <option value="en">English</option>
+                <option value="zh">中文 (Chinese)</option>
+            </select>
+
+            <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200">
+                <i id="themeIcon" class="fa-solid fa-moon"></i>
+            </button>
+
+            <div class="bg-gray-100 dark:bg-slate-800 p-1 rounded-lg flex space-x-1 border border-gray-200 dark:border-slate-700">
+                <button onclick="switchRole('worker')" id="btn-role-worker" class="px-3 py-1 rounded text-xs font-medium transition-all bg-primary text-white">Pekerja</button>
+                <button onclick="switchRole('employer')" id="btn-role-employer" class="px-3 py-1 rounded text-xs font-medium transition-all text-gray-600 dark:text-gray-400">Majikan</button>
+                <button onclick="switchRole('admin')" id="btn-role-admin" class="px-3 py-1 rounded text-xs font-medium transition-all text-gray-600 dark:text-gray-400">SuperAdmin</button>
+            </div>
+
+            <button onclick="handleLogout()" class="text-xs font-medium text-warning hover:underline ml-2">
+                <i class="fa-solid fa-right-from-bracket"></i> <span class="hidden md:inline">Log Keluar</span>
+            </button>
+        </div>
+    </header>
+
+    <div class="flex flex-col lg:flex-row flex-1">
+        
+        <aside class="w-full lg:w-80 bg-white dark:bg-darkCard border-r border-gray-200 dark:border-slate-700 p-4 space-y-4 text-sm overflow-y-auto max-h-[calc(100vh-65px)]">
+            <div>
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Navigasi Senibina & Kod</h3>
+                <nav class="space-y-1">
+                    <button onclick="showDocSection('doc-architecture')" class="doc-tab-btn w-full text-left px-3 py-2 rounded-lg bg-blue-50 dark:bg-slate-800 text-primary font-medium flex items-center space-x-2">
+                        <i class="fa-solid fa-sitemap w-5"></i> <span>1. Seni Bina Flutter & Folder</span>
+                    </button>
+                    <button onclick="showDocSection('doc-database')" class="doc-tab-btn w-full text-left px-3 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-800 flex items-center space-x-2">
+                        <i class="fa-solid fa-database w-5"></i> <span>2. Skema & Aturan Firestore</span>
+                    </button>
+                    <button onclick="showDocSection('doc-flutter-code')" class="doc-tab-btn w-full text-left px-3 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-800 flex items-center space-x-2">
+                        <i class="fa-solid fa-code w-5"></i> <span>3. Kod Sumber Flutter (Clean)</span>
+                    </button>
+                    <button onclick="showDocSection('app-live-preview')" class="doc-tab-btn w-full text-left px-3 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-800 flex items-center space-x-2 border border-dashed border-primary/40 mt-4">
+                        <i class="fa-solid fa-laptop-code text-primary w-5"></i> <span class="font-bold text-gray-800 dark:text-gray-200">4. LIVE APP DASHBOARD</span>
+                    </button>
+                </nav>
+            </div>
+            
+            <hr class="border-gray-200 dark:border-slate-700">
+            
+            <div class="bg-blue-50 dark:bg-slate-800/50 p-3 rounded-xl border border-blue-100 dark:border-slate-700">
+                <h4 class="font-semibold text-xs text-primary mb-1"><i class="fa-solid fa-shield-halved"></i> Malaysia Compliance Active</h4>
+                <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">Kadar caruman automatik berpandukan jadual berkanun KWSP (EPF Third Schedule), PERKESO (SOCSO Category 1 & 2), SIP (EIS) dan jadual potongan cukai bulanan MBR LHDN (PCB 2026).</p>
+            </div>
+        </aside>
+
+        <main class="flex-1 p-4 lg:p-6 overflow-y-auto max-h-[calc(100vh-65px)]">
+            
+            <section id="doc-architecture" class="doc-section space-y-6">
+                <div class="bg-white dark:bg-darkCard p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700">
+                    <h2 class="text-2xl font-bold mb-2">1. Seni Bina Sistem & Struktur Folder Flutter (MVVM Clean Architecture)</h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Sistem modular dipisahkan mengikut tanggungjawab lapisan data, domain, dan pembentangan (presentation) untuk skala pengeluaran tinggi.</p>
+                    
+                    <div class="bg-slate-900 text-slate-200 p-4 rounded-xl font-mono text-xs overflow-x-auto leading-relaxed">
+lib/
+├── core/
+│   ├── constants/        # app_colors.dart, api_endpoints.dart
+│   ├── theme/            # app_theme.dart (Material Design 3 Light/Dark)
+│   ├── utils/            # malaysia_compliance_calc.dart (EPF/SOCSO/PCB formulas)
+│   └── network/          # firebase_client.dart
+├── data/
+│   ├── models/           # user_model.dart, attendance_model.dart, leave_model.dart, payslip_model.dart
+│   ├── datasources/      # firebase_remote_datasource.dart, local_storage_datasource.dart
+│   └── repositories/     # attendance_repository_impl.dart, payroll_repository_impl.dart
+├── domain/
+│   ├── entities/         # employee_entity.dart, task_entity.dart
+│   ├── repositories/     # attendance_repository.dart, payroll_repository.dart
+│   └── usecases/         # calculate_pcb_usecase.dart, clock_in_out_usecase.dart, process_leave_usecase.dart
+└── presentation/
+    ├── providers/        # auth_provider.dart, attendance_viewmodel.dart, leave_viewmodel.dart
+    ├── screens/
+    │   ├── auth/         # login_screen.dart, forgot_password_screen.dart
+    │   ├── super_admin/  # company_management_screen.dart, subscription_screen.dart
+    │   ├── employer/     # employer_dashboard_screen.dart, report_generator_screen.dart
+    │   └── worker/       # worker_dashboard_screen.dart, profile_screen.dart, attendance_clock_screen.dart
+    └── widgets/          # custom_button.dart, loading_skeleton.dart, stat_card.dart, compliance_table.dart
+                    </div>
+                </div>
+            </section>
+
+            <section id="doc-database" class="doc-section hidden space-y-6">
+                <div class="bg-white dark:bg-darkCard p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700">
+                    <h2 class="text-2xl font-bold mb-2">2. Struktur Skema Database Firestore & Aturan Keselamatan</h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Skema Ternormalisasi & Aturan RABC (Role Based Access Control) Gred Institusi Kewangan.</p>
+                    
+                    <h3 class="text-md font-semibold text-primary mt-4 mb-2"><i class="fa-solid fa-lock"></i> Firebase Security Rules (firestore.rules)</h3>
+                    <div class="bg-slate-900 text-slate-200 p-4 rounded-xl font-mono text-xs overflow-x-auto mb-4">
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents font-semibold {
+    
+    // Helper Functions
+    function isAuthenticated() { return request.auth != null; }
+    function getUserData() { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data; }
+    function isSuperAdmin() { return isAuthenticated() && getUserData().role == 'super_admin'; }
+    function isEmployer(companyId) { return isAuthenticated() && getUserData().role == 'employer' && getUserData().companyId == companyId; }
+    function isEmployee(userId) { return isAuthenticated() && request.auth.uid == userId; }
+
+    // Collection Rules
+    match /companies/{companyId} {
+      allow read, write: if isSuperAdmin();
+      allow read: if isAuthenticated() && getUserData().companyId == companyId;
+    }
+    
+    match /users/{userId} {
+      allow read, write: if isSuperAdmin();
+      allow read, update: if isEmployee(userId);
+      allow read, create, update: if isAuthenticated() && getUserData().role == 'employer' && getUserData().companyId == request.resource.data.companyId;
+    }
+
+    match /attendance/{attendanceId} {
+      allow read, write: if isSuperAdmin();
+      allow create, read: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow read, update: if isAuthenticated() && isEmployer(resource.data.companyId);
+    }
+
+    match /leave/{leaveId} {
+      allow create, read, update: if isAuthenticated() && (request.resource.data.userId == request.auth.uid || resource.data.userId == request.auth.uid);
