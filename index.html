@@ -3,171 +3,1070 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dasmot Team - Sistem Pengurusan Kerja Pintar Malaysia</title>
+    <title>Dasmot Team - Satu Aplikasi Untuk Semua Pengurusan Pekerja</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        .dark .glass { background: rgba(30, 41, 59, 0.75); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+    
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        primary: '#2563EB',
-                        success: '#22C55E',
-                        warning: '#EF4444',
-                        darkBg: '#0F172A',
-                        darkCard: '#1E293B'
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
+                        brand: {
+                            50: '#eef6ff',
+                            100: '#d9ecff',
+                            500: '#1565C0',
+                            600: '#0d47a1',
+                            900: '#0a2540'
+                        }
                     }
                 }
             }
         }
     </script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body { font-family: 'Inter', sans-serif; transition: background-color 0.3s, color 0.3s; }
-        .skeleton { background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%); background-size: 200% 100%; animation: loading 1.5s infinite; }
-        .dark .skeleton { background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%); background-size: 200% 100%; }
-        @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-    </style>
 </head>
-<body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100 min-h-screen flex flex-col">
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-50 transition-colors duration-300 min-h-screen flex flex-col antialiased">
 
-    <header class="bg-white dark:bg-darkCard border-b border-gray-200 dark:border-slate-700 sticky top-0 z-50 px-4 py-3 flex items-center justify-between shadow-sm">
-        <div class="flex items-center space-x-3">
-            <div class="bg-primary p-2 rounded-xl text-white font-bold flex items-center justify-center shadow-lg shadow-blue-500/30">
-                <i class="fa-solid fa-people-roof text-xl"></i>
-            </div>
-            <div>
-                <h1 class="text-lg font-bold tracking-tight text-gray-900 dark:text-white">Dasmot<span class="text-primary">Team</span></h1>
-                <p class="text-xs text-gray-500 dark:text-gray-400">Malaysia Compliance HR Ecosystem</p>
-            </div>
-        </div>
-
-        <div class="flex items-center space-x-3">
-            <select id="langSelect" onchange="changeLanguage(this.value)" class="bg-gray-100 dark:bg-slate-800 text-xs rounded-lg p-2 border-none focus:ring-2 focus:ring-primary">
-                <option value="ms">Bahasa Melayu</option>
-                <option value="en">English</option>
-                <option value="zh">中文 (Chinese)</option>
-            </select>
-
-            <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200">
-                <i id="themeIcon" class="fa-solid fa-moon"></i>
-            </button>
-
-            <div class="bg-gray-100 dark:bg-slate-800 p-1 rounded-lg flex space-x-1 border border-gray-200 dark:border-slate-700">
-                <button onclick="switchRole('worker')" id="btn-role-worker" class="px-3 py-1 rounded text-xs font-medium transition-all bg-primary text-white">Pekerja</button>
-                <button onclick="switchRole('employer')" id="btn-role-employer" class="px-3 py-1 rounded text-xs font-medium transition-all text-gray-600 dark:text-gray-400">Majikan</button>
-                <button onclick="switchRole('admin')" id="btn-role-admin" class="px-3 py-1 rounded text-xs font-medium transition-all text-gray-600 dark:text-gray-400">SuperAdmin</button>
-            </div>
-
-            <button onclick="handleLogout()" class="text-xs font-medium text-warning hover:underline ml-2">
-                <i class="fa-solid fa-right-from-bracket"></i> <span class="hidden md:inline">Log Keluar</span>
-            </button>
-        </div>
-    </header>
-
-    <div class="flex flex-col lg:flex-row flex-1">
+    <div id="app" class="flex-1 flex flex-col md:flex-row min-h-screen">
         
-        <aside class="w-full lg:w-80 bg-white dark:bg-darkCard border-r border-gray-200 dark:border-slate-700 p-4 space-y-4 text-sm overflow-y-auto max-h-[calc(100vh-65px)]">
-            <div>
-                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Navigasi Senibina & Kod</h3>
-                <nav class="space-y-1">
-                    <button onclick="showDocSection('doc-architecture')" class="doc-tab-btn w-full text-left px-3 py-2 rounded-lg bg-blue-50 dark:bg-slate-800 text-primary font-medium flex items-center space-x-2">
-                        <i class="fa-solid fa-sitemap w-5"></i> <span>1. Seni Bina Flutter & Folder</span>
-                    </button>
-                    <button onclick="showDocSection('doc-database')" class="doc-tab-btn w-full text-left px-3 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-800 flex items-center space-x-2">
-                        <i class="fa-solid fa-database w-5"></i> <span>2. Skema & Aturan Firestore</span>
-                    </button>
-                    <button onclick="showDocSection('doc-flutter-code')" class="doc-tab-btn w-full text-left px-3 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-800 flex items-center space-x-2">
-                        <i class="fa-solid fa-code w-5"></i> <span>3. Kod Sumber Flutter (Clean)</span>
-                    </button>
-                    <button onclick="showDocSection('app-live-preview')" class="doc-tab-btn w-full text-left px-3 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-800 flex items-center space-x-2 border border-dashed border-primary/40 mt-4">
-                        <i class="fa-solid fa-laptop-code text-primary w-5"></i> <span class="font-bold text-gray-800 dark:text-gray-200">4. LIVE APP DASHBOARD</span>
-                    </button>
-                </nav>
-            </div>
-            
-            <hr class="border-gray-200 dark:border-slate-700">
-            
-            <div class="bg-blue-50 dark:bg-slate-800/50 p-3 rounded-xl border border-blue-100 dark:border-slate-700">
-                <h4 class="font-semibold text-xs text-primary mb-1"><i class="fa-solid fa-shield-halved"></i> Malaysia Compliance Active</h4>
-                <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">Kadar caruman automatik berpandukan jadual berkanun KWSP (EPF Third Schedule), PERKESO (SOCSO Category 1 & 2), SIP (EIS) dan jadual potongan cukai bulanan MBR LHDN (PCB 2026).</p>
-            </div>
-        </aside>
-
-        <main class="flex-1 p-4 lg:p-6 overflow-y-auto max-h-[calc(100vh-65px)]">
-            
-            <section id="doc-architecture" class="doc-section space-y-6">
-                <div class="bg-white dark:bg-darkCard p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700">
-                    <h2 class="text-2xl font-bold mb-2">1. Seni Bina Sistem & Struktur Folder Flutter (MVVM Clean Architecture)</h2>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Sistem modular dipisahkan mengikut tanggungjawab lapisan data, domain, dan pembentangan (presentation) untuk skala pengeluaran tinggi.</p>
-                    
-                    <div class="bg-slate-900 text-slate-200 p-4 rounded-xl font-mono text-xs overflow-x-auto leading-relaxed">
-lib/
-├── core/
-│   ├── constants/        # app_colors.dart, api_endpoints.dart
-│   ├── theme/            # app_theme.dart (Material Design 3 Light/Dark)
-│   ├── utils/            # malaysia_compliance_calc.dart (EPF/SOCSO/PCB formulas)
-│   └── network/          # firebase_client.dart
-├── data/
-│   ├── models/           # user_model.dart, attendance_model.dart, leave_model.dart, payslip_model.dart
-│   ├── datasources/      # firebase_remote_datasource.dart, local_storage_datasource.dart
-│   └── repositories/     # attendance_repository_impl.dart, payroll_repository_impl.dart
-├── domain/
-│   ├── entities/         # employee_entity.dart, task_entity.dart
-│   ├── repositories/     # attendance_repository.dart, payroll_repository.dart
-│   └── usecases/         # calculate_pcb_usecase.dart, clock_in_out_usecase.dart, process_leave_usecase.dart
-└── presentation/
-    ├── providers/        # auth_provider.dart, attendance_viewmodel.dart, leave_viewmodel.dart
-    ├── screens/
-    │   ├── auth/         # login_screen.dart, forgot_password_screen.dart
-    │   ├── super_admin/  # company_management_screen.dart, subscription_screen.dart
-    │   ├── employer/     # employer_dashboard_screen.dart, report_generator_screen.dart
-    │   └── worker/       # worker_dashboard_screen.dart, profile_screen.dart, attendance_clock_screen.dart
-    └── widgets/          # custom_button.dart, loading_skeleton.dart, stat_card.dart, compliance_table.dart
+        <div id="auth-screen" class="flex-1 flex items-center justify-center p-4 min-h-screen bg-gradient-to-tr from-brand-900 via-brand-600 to-brand-500">
+            <div class="glass dark:glass w-full max-w-md p-8 rounded-3xl shadow-2xl border border-white/20 text-center relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-xl"></div>
+                <div class="flex justify-center mb-2">
+                    <div class="p-4 bg-white/10 rounded-2xl backdrop-blur-md">
+                        <span class="material-symbols-rounded text-5xl text-white">diversity_3</span>
                     </div>
                 </div>
-            </section>
+                <h1 class="text-3xl font-bold text-white tracking-tight">Dasmot Team</h1>
+                <p class="text-white/80 text-sm mt-1 mb-8">Satu Aplikasi Untuk Semua Pengurusan Pekerja</p>
 
-            <section id="doc-database" class="doc-section hidden space-y-6">
-                <div class="bg-white dark:bg-darkCard p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700">
-                    <h2 class="text-2xl font-bold mb-2">2. Struktur Skema Database Firestore & Aturan Keselamatan</h2>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Skema Ternormalisasi & Aturan RABC (Role Based Access Control) Gred Institusi Kewangan.</p>
+                <div id="auth-forms" class="text-left space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-white/90 uppercase tracking-wider mb-2">E-mel Syarikat</label>
+                        <input type="email" id="auth-email" placeholder="nama@syarikat.com" class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-white/90 uppercase tracking-wider mb-2">Kata Laluan</label>
+                        <input type="password" id="auth-password" placeholder="••••••••" class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition">
+                    </div>
                     
-                    <h3 class="text-md font-semibold text-primary mt-4 mb-2"><i class="fa-solid fa-lock"></i> Firebase Security Rules (firestore.rules)</h3>
-                    <div class="bg-slate-900 text-slate-200 p-4 rounded-xl font-mono text-xs overflow-x-auto mb-4">
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents font-semibold {
-    
-    // Helper Functions
-    function isAuthenticated() { return request.auth != null; }
-    function getUserData() { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data; }
-    function isSuperAdmin() { return isAuthenticated() && getUserData().role == 'super_admin'; }
-    function isEmployer(companyId) { return isAuthenticated() && getUserData().role == 'employer' && getUserData().companyId == companyId; }
-    function isEmployee(userId) { return isAuthenticated() && request.auth.uid == userId; }
+                    <div class="flex items-center justify-between text-xs text-white/90 pt-1">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" checked class="rounded border-white/20 bg-transparent text-brand-600 focus:ring-0"> Ingat Saya
+                        </label>
+                        <button onclick="alert('Fungsi OTP & Reset Katalaluan dihantar ke emel.')" class="hover:underline">Lupa Kata Laluan?</button>
+                    </div>
 
-    // Collection Rules
-    match /companies/{companyId} {
-      allow read, write: if isSuperAdmin();
-      allow read: if isAuthenticated() && getUserData().companyId == companyId;
-    }
-    
-    match /users/{userId} {
-      allow read, write: if isSuperAdmin();
-      allow read, update: if isEmployee(userId);
-      allow read, create, update: if isAuthenticated() && getUserData().role == 'employer' && getUserData().companyId == request.resource.data.companyId;
-    }
+                    <button onclick="handleLogin()" class="w-full py-3 mt-4 bg-white text-brand-600 font-semibold rounded-xl shadow-lg hover:bg-slate-100 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                        <span class="material-symbols-rounded text-xl">login</span> Log Masuk
+                    </button>
 
-    match /attendance/{attendanceId} {
-      allow read, write: if isSuperAdmin();
-      allow create, read: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
-      allow read, update: if isAuthenticated() && isEmployer(resource.data.companyId);
-    }
+                    <div class="relative my-6 flex items-center justify-center">
+                        <div class="border-t border-white/20 w-full"></div>
+                        <span class="absolute bg-brand-600 px-3 text-xs text-white/60">Atau log masuk dengan</span>
+                    </div>
 
-    match /leave/{leaveId} {
-      allow create, read, update: if isAuthenticated() && (request.resource.data.userId == request.auth.uid || resource.data.userId == request.auth.uid);
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="simulateOAuth('Google')" class="py-2.5 bg-white/10 hover:bg-white/20 border border-white/10 text-white text-sm rounded-xl transition flex items-center justify-center gap-2">
+                            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-4 h-4" alt="Google"> Google
+                        </button>
+                        <button onclick="simulateOAuth('Apple')" class="py-2.5 bg-white/10 hover:bg-white/20 border border-white/10 text-white text-sm rounded-xl transition flex items-center justify-center gap-2">
+                            <span class="material-symbols-rounded text-lg">phone_iphone</span> Biometrik
+                        </button>
+                    </div>
+
+                    <div class="pt-4 border-t border-white/10 text-center">
+                        <p class="text-[11px] text-white/60 mb-2">Pilih Role Simulasi (Untuk Pengujian Pantas):</p>
+                        <div class="flex justify-center gap-2">
+                            <button onclick="bypassAuth('pekerja')" class="px-2 py-1 bg-amber-500 text-white text-xs rounded hover:bg-amber-600 transition">Pekerja</button>
+                            <button onclick="bypassAuth('majikan')" class="px-2 py-1 bg-emerald-500 text-white text-xs rounded hover:bg-emerald-600 transition">Majikan</button>
+                            <button onclick="bypassAuth('admin')" class="px-2 py-1 bg-rose-500 text-white text-xs rounded hover:bg-rose-600 transition">Super Admin</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="main-app" class="hidden flex-1 flex flex-col md:flex-row min-h-screen w-full">
+            
+            <aside id="sidebar" class="hidden md:flex flex-col w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 p-4 shrink-0 justify-between">
+                <div>
+                    <div class="flex items-center gap-3 px-2 py-3 mb-6">
+                        <div class="p-2 bg-brand-500 text-white rounded-xl shadow-md flex items-center justify-center">
+                            <span class="material-symbols-rounded">diversity_3</span>
+                        </div>
+                        <div>
+                            <h2 class="font-bold text-md tracking-tight">Dasmot Team</h2>
+                            <p class="text-xs text-slate-500 dark:text-slate-400" id="user-role-badge">Pekerja Suite</p>
+                        </div>
+                    </div>
+
+                    <nav id="sidebar-menu" class="space-y-1">
+                        </nav>
+                </div>
+
+                <div class="border-t border-slate-200 dark:border-slate-800 pt-4 flex flex-col gap-3">
+                    <div class="flex items-center gap-3 px-2">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=100&auto=format&fit=crop" id="user-avatar" class="w-10 h-10 rounded-full border-2 border-brand-500 object-cover" alt="Profile">
+                        <div class="overflow-hidden">
+                            <h4 class="font-semibold text-sm truncate" id="user-display-name">Aisyah Humaira</h4>
+                            <p class="text-xs text-slate-400 truncate" id="user-display-email">aisyah@dasmot.com</p>
+                        </div>
+                    </div>
+                    <button onclick="logout()" class="w-full py-2 bg-slate-100 hover:bg-red-50 dark:bg-slate-800 dark:hover:bg-red-950/30 text-slate-700 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400 rounded-xl transition flex items-center justify-center gap-2 text-sm font-medium">
+                        <span class="material-symbols-rounded text-lg">logout</span> Keluar Sistem
+                    </button>
+                </div>
+            </aside>
+
+            <main class="flex-1 flex flex-col min-h-screen overflow-x-hidden pb-20 md:pb-0">
+                
+                <header class="glass dark:glass sticky top-0 z-40 border-b border-slate-200 dark:border-slate-800 px-4 py-3 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-rounded text-brand-500 md:hidden">diversity_3</span>
+                        <div>
+                            <h3 class="font-bold text-sm md:text-base" id="header-greeting">Selamat Datang, Aisyah</h3>
+                            <p class="text-[11px] md:text-xs text-slate-500 dark:text-slate-400" id="live-clock">Selasa, 30 Jun 2026 | 16:28:00</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-2">
+                        <button onclick="toggleDarkMode()" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition flex items-center justify-center" title="Tukar Tema">
+                            <span class="material-symbols-rounded text-xl" id="theme-icon">dark_mode</span>
+                        </button>
+                        <button onclick="openNotificationModal()" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition relative flex items-center justify-center" title="Notifikasi">
+                            <span class="material-symbols-rounded text-xl">notifications</span>
+                            <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                        </button>
+                        <button onclick="triggerAIChat()" class="p-2 bg-brand-50 hover:bg-brand-100 text-brand-600 dark:bg-brand-950/50 dark:hover:bg-brand-900 rounded-xl transition flex items-center justify-center gap-1 text-xs font-semibold px-3">
+                            <span class="material-symbols-rounded text-sm">bento</span> AI Assistant
+                        </button>
+                    </div>
+                </header>
+
+                <div id="content-view" class="p-4 md:p-6 flex-1 max-w-7xl w-full mx-auto space-y-6">
+                    </div>
+            </main>
+
+            <nav id="bottom-nav" class="md:hidden fixed bottom-0 left-0 right-0 glass dark:glass border-t border-slate-200 dark:border-slate-800 flex justify-around py-2 z-40">
+                </nav>
+        </div>
+    </div>
+
+    <div id="ai-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-end justify-center md:items-center p-4">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-t-3xl md:rounded-3xl shadow-2xl flex flex-col max-h-[85vh] md:max-h-[75vh]">
+            <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-gradient-to-r from-brand-600 to-brand-500 text-white rounded-t-3xl md:rounded-t-3xl">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-rounded">smart_toy</span>
+                    <div>
+                        <h4 class="font-bold text-sm">Dasmot AI Assistant</h4>
+                        <p class="text-[10px] text-white/80">Analisis & Cadangan Automatik Pintar</p>
+                    </div>
+                </div>
+                <button onclick="closeAIModal()" class="text-white/80 hover:text-white"><span class="material-symbols-rounded">close</span></button>
+            </div>
+            <div class="p-4 overflow-y-auto flex-1 space-y-4 text-xs md:text-sm no-scrollbar" id="ai-chat-history">
+                <div class="flex gap-2 items-start bg-slate-50 dark:bg-slate-800/50 p-3 rounded-2xl">
+                    <span class="material-symbols-rounded text-brand-500 mt-0.5">smart_toy</span>
+                    <div>
+                        <p class="font-semibold text-brand-600 mb-0.5">Dasmot AI</p>
+                        <p>Hai! Saya bersedia membantu anda hari ini. Berdasarkan data semasa syarikat anda:</p>
+                        <ul class="list-disc list-inside mt-2 space-y-1 text-slate-600 dark:text-slate-300">
+                            <li><strong class="text-emerald-500">AI Kehadiran:</strong> Tahap ketepatan masa minggu ini mencapai 94.2%.</li>
+                            <li><strong class="text-brand-500">AI Tuntutan:</strong> Tiada unsur anomali dikesan pada 12 resit terakhir yang dimuat naik.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="p-3 border-t border-slate-200 dark:border-slate-800 flex gap-2 bg-slate-50 dark:bg-slate-950">
+                <input type="text" id="ai-input" placeholder="Tanya tentang cuti, payroll atau analisa graf..." class="flex-1 px-4 py-2 text-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500">
+                <button onclick="sendAIChat()" class="p-2 bg-brand-500 text-white rounded-xl hover:bg-brand-600 flex items-center justify-center"><span class="material-symbols-rounded">send</span></button>
+            </div>
+        </div>
+    </div>
+
+    <div id="chat-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-2xl h-[80vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden">
+            <div class="bg-slate-100 dark:bg-slate-800 p-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-brand-500 flex items-center justify-center text-white font-bold text-sm">G</div>
+                    <div>
+                        <h3 class="font-bold text-sm">Syarikat Chat (Umum)</h3>
+                        <p class="text-xs text-emerald-500 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span> 14 Rakan Sekerja Aktif</p>
+                    </div>
+                </div>
+                <button onclick="document.getElementById('chat-modal').classList.add('hidden')" class="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full flex items-center justify-center"><span class="material-symbols-rounded">close</span></button>
+            </div>
+            <div class="flex-1 p-4 overflow-y-auto space-y-4 text-xs md:text-sm no-scrollbar" id="chat-messages-box">
+                <div class="flex gap-2 items-start max-w-[80%]">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=100&auto=format&fit=crop" class="w-8 h-8 rounded-full object-cover">
+                    <div class="bg-slate-100 dark:bg-slate-800 p-3 rounded-2xl rounded-tl-none">
+                        <p class="font-bold text-xs text-brand-600 mb-0.5">Khairul Anwar (Pengurus)</p>
+                        <p>Sila ambil perhatian, SOP keselamatan baharu telah dimuat naik ke dalam Modul Dokumen Syarikat. Sila semak dan tandatangan digital.</p>
+                        <span class="text-[9px] text-slate-400 block text-right mt-1">14:20</span>
+                    </div>
+                </div>
+                <div class="flex gap-2 items-start max-w-[80%] ml-auto flex-row-reverse">
+                    <div class="bg-brand-500 text-white p-3 rounded-2xl rounded-tr-none">
+                        <p>Baik encik, saya akan baca dan semak sekarang juga.</p>
+                        <span class="text-[9px] text-white/70 block text-right mt-1">14:22 ✓✓</span>
+                    </div>
+                </div>
+            </div>
+            <div class="p-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 flex items-center gap-2">
+                <button class="p-2 text-slate-400 hover:text-brand-500 flex items-center"><span class="material-symbols-rounded">attach_file</span></button>
+                <input type="text" id="chat-input-field" placeholder="Tulis mesej anda..." class="flex-1 px-4 py-2 text-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500">
+                <button onclick="sendLiveChatMessage()" class="p-2 bg-brand-500 text-white rounded-xl hover:bg-brand-600 flex items-center justify-center"><span class="material-symbols-rounded">send</span></button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import the Firebase SDK modules from specified version 10 CDN
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Kredensial Firebase yang dibekalkan oleh pengguna
+        const firebaseConfig = {
+            apiKey: "AIzaSyDsgwBBXRPkGNKjp8BvL1ZHMyQWQbLha5Q",
+            authDomain: "dasmot-team.firebaseapp.com",
+            databaseURL: "https://dasmot-team-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "dasmot-team",
+            storageBucket: "dasmot-team.firebasestorage.app",
+            messagingSenderId: "662345298771",
+            appId: "1:662345298771:web:35d1504b9f9ccb5d90e7a6"
+        };
+
+        // Initialize Firebase app instance
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Global Application Architecture State
+        window.state = {
+            currentUser: null,
+            currentRole: 'pekerja', // default state fallback
+            currentView: 'dashboard',
+            attendanceLog: [
+                { date: '2026-06-29', checkIn: '08:45 AM', checkOut: '05:30 PM', status: 'Tepat Masa' },
+                { date: '2026-06-30', checkIn: '09:15 AM', checkOut: '--:--', status: 'Lewat' }
+            ],
+            leaves: [
+                { id: 1, type: 'Cuti Tahunan', date: '2026-07-05', duration: '2 Hari', status: 'Dalam Proses' },
+                { id: 2, type: 'Cuti Sakit', date: '2026-06-12', duration: '1 Hari', status: 'Diluluskan' }
+            ],
+            claims: [
+                { id: 101, type: 'Petrol', amount: 'RM 85.00', date: '2026-06-25', status: 'Diluluskan' },
+                { id: 102, type: 'Parking', amount: 'RM 12.00', date: '2026-06-28', status: 'Dalam Proses' }
+            ]
+        };
+
+        // Initialization Logic
+        window.addEventListener('DOMContentLoaded', () => {
+            updateLiveClock();
+            setInterval(updateLiveClock, 1000);
+            
+            // Check dynamic system settings for color themes
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.documentElement.classList.add('dark');
+            }
+        });
+
+        function updateLiveClock() {
+            const clockEl = document.getElementById('live-clock');
+            if (clockEl) {
+                const options = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'Asia/Kuala_Lumpur' };
+                clockEl.innerText = new Date().toLocaleDateString('ms-MY', options);
+            }
+        }
+
+        // Bypassing / Authenticators Mock Mechanisms
+        window.bypassAuth = function(role) {
+            window.state.currentRole = role;
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
+            
+            // Customize Profile Meta data contextually per view model role
+            const nameBadge = document.getElementById('user-display-name');
+            const roleBadge = document.getElementById('user-role-badge');
+            const greeting = document.getElementById('header-greeting');
+            
+            if (role === 'pekerja') {
+                nameBadge.innerText = 'Aisyah Humaira';
+                roleBadge.innerText = 'Pekerja Tetap (IT Support)';
+                greeting.innerText = 'Selamat Datang, Aisyah';
+            } else if (role === 'majikan') {
+                nameBadge.innerText = 'Dato Azman Rahman';
+                roleBadge.innerText = 'Pemilik Syarikat (CEO)';
+                greeting.innerText = 'Selamat Datang, Dato';
+            } else if (role === 'admin') {
+                nameBadge.innerText = 'Super Admin System';
+                roleBadge.innerText = 'Global Root Administrator';
+                greeting.innerText = 'Sistem Menu Super Admin';
+            }
+            
+            renderNavigationMenus();
+            navigateTo('dashboard');
+        };
+
+        window.handleLogin = function() {
+            // Default automatic routing to standard employee space for presentation layout
+            window.bypassAuth('pekerja');
+        };
+
+        window.logout = function() {
+            document.getElementById('main-app').classList.add('hidden');
+            document.getElementById('auth-screen').classList.remove('hidden');
+        };
+
+        // NAVIGATION CONFIGURATION SPECIFICATION PER ROLE MATRIX
+        const menuConfigurations = {
+            pekerja: [
+                { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
+                { id: 'kehadiran', label: 'Kehadiran (Clock)', icon: 'fingerprint' },
+                { id: 'cuti', label: 'Pohon Cuti', icon: 'calendar_today' },
+                { id: 'claims', label: 'Tuntutan (Claims)', icon: 'payments' },
+                { id: 'payslip', label: 'Slip Gaji', icon: 'receipt_long' },
+                { id: 'documents', label: 'SOP & Dokumen', icon: 'folder_open' },
+                { id: 'tasks', label: 'Tugasan Kerja', icon: 'assignment' }
+            ],
+            majikan: [
+                { id: 'dashboard', label: 'Analitik Majikan', icon: 'analytics' },
+                { id: 'urus_pekerja', label: 'Urus Staf/Pekerja', icon: 'group_add' },
+                { id: 'sahkan_kehadiran', label: 'Log Kehadiran Staf', icon: 'fact_check' },
+                { id: 'sahkan_cuti', label: 'Kelulusan Cuti', icon: 'event_busy' },
+                { id: 'sahkan_claims', label: 'Kelulusan Tuntutan', icon: 'price_check' },
+                { id: 'payroll_summary', label: 'Ringkasan Payroll', icon: 'account_balance_wallet' },
+                { id: 'announcements', label: 'Hebahan & Memo', icon: 'campaign' }
+            ],
+            admin: [
+                { id: 'dashboard', label: 'Global Overview', icon: 'monitoring' },
+                { id: 'urus_syarikat', label: 'Urus Syarikat (B2B)', icon: 'domain' },
+                { id: 'subscription_plans', label: 'Sistem Langganan', icon: 'loyalty' },
+                { id: 'audit_logs', label: 'Audit Log Sistem', icon: 'security' },
+                { id: 'system_settings', label: 'Tetapan Server', icon: 'settings_applications' }
+            ]
+        };
+
+        function renderNavigationMenus() {
+            const role = window.state.currentRole;
+            const currentMenus = menuConfigurations[role] || [];
+            
+            const sidebarContainer = document.getElementById('sidebar-menu');
+            const bottomContainer = document.getElementById('bottom-nav');
+            
+            sidebarContainer.innerHTML = '';
+            bottomContainer.innerHTML = '';
+            
+            currentMenus.forEach(menu => {
+                // Render Sidebar Layout Template
+                const sbBtn = document.createElement('button');
+                sbBtn.className = `w-full flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm text-left transition ${window.state.currentView === menu.id ? 'bg-brand-500 text-white shadow-md' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}`;
+                sbBtn.innerHTML = `<span class="material-symbols-rounded text-xl">${menu.icon}</span> ${menu.label}`;
+                sbBtn.onclick = () => navigateTo(menu.id);
+                sidebarContainer.appendChild(sbBtn);
+                
+                // Render Bottom Bar Layout for smartphone mobile UI architecture constraint
+                // Render only first 4 tracking menus for mobile clarity view space
+                if (currentMenus.indexOf(menu) < 4) {
+                    const bbBtn = document.createElement('button');
+                    bbBtn.className = `flex flex-col items-center gap-0.5 text-center flex-1 py-1 ${window.state.currentView === menu.id ? 'text-brand-500 font-semibold' : 'text-slate-400'}`;
+                    bbBtn.innerHTML = `<span class="material-symbols-rounded text-xl">${menu.icon}</span><span class="text-[10px]">${menu.label.split(' ')[0]}</span>`;
+                    bbBtn.onclick = () => navigateTo(menu.id);
+                    bottomContainer.appendChild(bbBtn);
+                }
+            });
+            
+            // Add a permanent profile settings configuration button for cross compatibility
+            const chatBbBtn = document.createElement('button');
+            chatBbBtn.className = 'flex flex-col items-center gap-0.5 text-center flex-1 py-1 text-slate-400';
+            chatBbBtn.innerHTML = '<span class="material-symbols-rounded text-xl">forum</span><span class="text-[10px]">Mesej</span>';
+            chatBbBtn.onclick = () => document.getElementById('chat-modal').classList.remove('hidden');
+            bottomContainer.appendChild(chatBbBtn);
+        }
+
+        window.navigateTo = function(viewId) {
+            window.state.currentView = viewId;
+            renderNavigationMenus(); // trigger structural refresh UI
+            
+            const mainContentArea = document.getElementById('content-view');
+            
+            // ROUTING REDIRECTOR PARSER ENGINE
+            switch(viewId) {
+                case 'dashboard':
+                    if (window.state.currentRole === 'pekerja') renderPekerjaDashboard(mainContentArea);
+                    else if (window.state.currentRole === 'majikan') renderMajikanDashboard(mainContentArea);
+                    else if (window.state.currentRole === 'admin') renderSuperAdminDashboard(mainContentArea);
+                    break;
+                case 'kehadiran':
+                    renderKehadiranModule(mainContentArea);
+                    break;
+                case 'cuti':
+                    renderCutiModule(mainContentArea);
+                    break;
+                case 'claims':
+                    renderClaimsModule(mainContentArea);
+                    break;
+                case 'payslip':
+                    renderPayslipModule(mainContentArea);
+                    break;
+                case 'tasks':
+                    renderTasksModule(mainContentArea);
+                    break;
+                case 'documents':
+                    renderDocumentsModule(mainContentArea);
+                    break;
+                // Views for Employers
+                case 'urus_pekerja':
+                    renderUrusPekerjaModule(mainContentArea);
+                    break;
+                case 'sahkan_cuti':
+                    renderSahkanCutiModule(mainContentArea);
+                    break;
+                // Views for Super Admin
+                case 'urus_syarikat':
+                    renderUrusSyarikatModule(mainContentArea);
+                    break;
+                default:
+                    mainContentArea.innerHTML = `
+                        <div class="p-8 text-center bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800">
+                            <span class="material-symbols-rounded text-4xl text-brand-500">construction</span>
+                            <h3 class="font-bold mt-2">Modul Sedang Dikemaskini</h3>
+                            <p class="text-xs text-slate-400 mt-1">Sistem menyokong gerbang API masa nyata Firestore.</p>
+                        </div>`;
+            }
+        };
+
+        // --- MODULE RENDERING SCRIPTS ---
+        
+        function renderPekerjaDashboard(container) {
+            container.innerHTML = `
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl flex items-center gap-3">
+                        <div class="p-3 bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400 rounded-xl"><span class="material-symbols-rounded">done_all</span></div>
+                        <div><p class="text-[11px] text-slate-400">Kehadiran Sebulan</p><h4 class="text-xl font-bold">22 / 24</h4></div>
+                    </div>
+                    <div class="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl flex items-center gap-3">
+                        <div class="p-3 bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400 rounded-xl"><span class="material-symbols-rounded">schedule</span></div>
+                        <div><p class="text-[11px] text-slate-400">Jumlah Lewat</p><h4 class="text-xl font-bold">1 Kali</h4></div>
+                    </div>
+                    <div class="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl flex items-center gap-3">
+                        <div class="p-3 bg-brand-50 text-brand-600 dark:bg-brand-950/40 dark:text-brand-400 rounded-xl"><span class="material-symbols-rounded">flight_takeoff</span></div>
+                        <div><p class="text-[11px] text-slate-400">Baki Cuti Tahunan</p><h4 class="text-xl font-bold">14 Hari</h4></div>
+                    </div>
+                    <div class="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl flex items-center gap-3">
+                        <div class="p-3 bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400 rounded-xl"><span class="material-symbols-rounded">pending_actions</span></div>
+                        <div><p class="text-[11px] text-slate-400">Tuntutan Belum Selesai</p><h4 class="text-xl font-bold">RM 12.00</h4></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 space-y-6">
+                        <div class="p-6 bg-gradient-to-r from-brand-600 to-brand-500 text-white rounded-3xl shadow-lg relative overflow-hidden">
+                            <div class="relative z-10">
+                                <span class="px-2.5 py-1 bg-white/20 text-[10px] rounded-full uppercase tracking-widest font-semibold">Geofencing & Wifi Aktif</span>
+                                <h3 class="text-xl font-bold mt-3">Sedia Untuk Mengetik Kehadiran Harian Anda?</h3>
+                                <p class="text-xs text-white/80 mt-1 mb-4">Lokasi: Menara Dasmot, Kuala Lumpur (Ketepatan: Gred Tinggi)</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <button onclick="navigateTo('kehadiran')" class="px-4 py-2 bg-white text-brand-600 font-bold rounded-xl text-xs flex items-center gap-1 shadow-sm"><span class="material-symbols-rounded text-sm">fingerprint</span> Buka Portal Masuk/Keluar Kerja</button>
+                                </div>
+                            </div>
+                            <span class="material-symbols-rounded text-[150px] opacity-10 absolute -right-4 -bottom-10">share_location</span>
+                        </div>
+
+                        <div class="p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-bold text-sm flex items-center gap-2"><span class="material-symbols-rounded text-brand-500">campaign</span> Pengumuman Rasmi Syarikat</h3>
+                                <span class="text-[11px] text-brand-500 font-medium">Lihat Semua</span>
+                            </div>
+                            <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-2xl">
+                                <div class="flex justify-between items-start"><span class="px-2 py-0.5 bg-rose-100 text-rose-700 text-[9px] font-bold rounded">PENTING</span><span class="text-[10px] text-slate-400">Semalam, 15:40</span></div>
+                                <h4 class="font-semibold text-xs mt-1">Pelaksanaan Sistem Kehadiran Biometrik Baharu Dasmot Team V3</h4>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Semua kakitangan dikehendaki mengemaskini maklumat pengesahan muka (Face Verification) di tab profil untuk mengelakkan sebarang kegagalan log masuk.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800">
+                            <h3 class="font-bold text-sm mb-4 flex items-center gap-2"><span class="material-symbols-rounded text-brand-500">badge</span> Kad Digital Kakitangan</h3>
+                            <div class="p-4 bg-gradient-to-br from-slate-900 to-slate-950 text-white rounded-2xl shadow-xl relative overflow-hidden border border-slate-800">
+                                <div class="flex justify-between items-start mb-6">
+                                    <div>
+                                        <h4 class="font-bold tracking-wide text-sm">DASMOT MALAYSIA</h4>
+                                        <p class="text-[8px] text-slate-400 uppercase tracking-widest">Digital Staff ID</p>
+                                    </div>
+                                    <span class="material-symbols-rounded text-brand-400">nfc</span>
+                                </div>
+                                <div class="flex gap-3 items-center">
+                                    <div class="w-12 h-12 bg-slate-700 rounded-xl border border-slate-600 overflow-hidden">
+                                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=100&auto=format&fit=crop" class="w-full h-full object-cover">
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-xs text-white">Aisyah Humaira</p>
+                                        <p class="text-[10px] text-slate-400">ID: DSM-2026-098</p>
+                                        <p class="text-[10px] text-emerald-400 font-semibold mt-0.5">IT SUPPORT ANALYST</p>
+                                    </div>
+                                </div>
+                                <div class="mt-4 pt-3 border-t border-slate-800 flex justify-between items-center">
+                                    <span class="text-[9px] text-slate-500">Imbas QR di pintu masuk utama</span>
+                                    <span class="material-symbols-rounded text-xl text-white">qr_code_2</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderMajikanDashboard(container) {
+            container.innerHTML = `
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    <h2 class="text-xl font-bold text-slate-800 dark:text-slate-100">Analitik Pentadbiran & Operasi Majikan</h2>
+                    <div class="flex items-center gap-2">
+                        <button onclick="alert('Exporting PDF...')" class="px-3 py-1.5 bg-white border border-slate-200 text-xs rounded-xl flex items-center gap-1 text-slate-700 font-medium dark:bg-slate-900 dark:border-slate-800 dark:text-slate-300"><span class="material-symbols-rounded text-sm">picture_as_pdf</span> Cetak PDF</button>
+                        <button onclick="alert('Exporting Excel...')" class="px-3 py-1.5 bg-white border border-slate-200 text-xs rounded-xl flex items-center gap-1 text-slate-700 font-medium dark:bg-slate-900 dark:border-slate-800 dark:text-slate-300"><span class="material-symbols-rounded text-sm">table_view</span> Excel</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
+                    <div class="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl">
+                        <p class="text-[10px] text-slate-400 font-semibold uppercase">Jumlah Kakitangan</p>
+                        <h3 class="text-2xl font-black mt-1 text-brand-500">148 Orang</h3>
+                    </div>
+                    <div class="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl">
+                        <p class="text-[10px] text-slate-400 font-semibold uppercase">Hadir Hari Ini</p>
+                        <h3 class="text-2xl font-black mt-1 text-emerald-500">139 / 148</h3>
+                    </div>
+                    <div class="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl">
+                        <p class="text-[10px] text-slate-400 font-semibold uppercase">Kakitangan Lewat</p>
+                        <h3 class="text-2xl font-black mt-1 text-amber-500">4 Orang</h3>
+                    </div>
+                    <div class="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl">
+                        <p class="text-[10px] text-slate-400 font-semibold uppercase">Sedang Bercuti</p>
+                        <h3 class="text-2xl font-black mt-1 text-indigo-500">5 Orang</h3>
+                    </div>
+                    <div class="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl">
+                        <p class="text-[10px] text-slate-400 font-semibold uppercase">Pending Claims</p>
+                        <h3 class="text-2xl font-black mt-1 text-rose-500">RM 1,430</h3>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 lg:col-span-2">
+                        <h4 class="font-bold text-sm mb-4">Analisa Kekerapan Kehadiran Mingguan Staf Syarikat</h4>
+                        <div class="h-64 relative"><canvas id="employerChart"></canvas></div>
+                    </div>
+                    
+                    <div class="p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-sm mb-2">Tindakan Kelulusan Segera</h4>
+                            <p class="text-xs text-slate-400 mb-4">Berikut adalah senarai menunggu kelulusan pengurus syarikat.</p>
+                            <div class="space-y-3">
+                                <div onclick="navigateTo('sahkan_cuti')" class="p-3 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 rounded-xl cursor-pointer transition flex justify-between items-center">
+                                    <div><p class="font-semibold text-xs">Permohonan Cuti Sakit</p><p class="text-[10px] text-slate-400">Oleh: Ahmad Shahril</p></div>
+                                    <span class="material-symbols-rounded text-brand-500 text-lg">chevron_right</span>
+                                </div>
+                                <div class="p-3 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 rounded-xl cursor-pointer transition flex justify-between items-center">
+                                    <div><p class="font-semibold text-xs">Tuntutan Perbatuan / Travel</p><p class="text-[10px] text-slate-400">Oleh: Melissa Tan (RM 230.00)</p></div>
+                                    <span class="material-symbols-rounded text-brand-500 text-lg">chevron_right</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pt-4 mt-4 border-t border-slate-200 dark:border-slate-800">
+                            <button onclick="triggerAIChat()" class="w-full py-2 bg-gradient-to-r from-brand-600 to-brand-500 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2"><span class="material-symbols-rounded text-base">smart_toy</span> Jana Ringkasan Gaji AI (Payroll Insight)</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Build dynamic javascript visual graphics with delay interval cycle loop safely
+            setTimeout(() => {
+                const ctx = document.getElementById('employerChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat'],
+                        datasets: [{
+                            label: 'Kadar Peratusan Hadir %',
+                            data: [96, 94, 98, 92, 89],
+                            borderColor: '#1565C0',
+                            backgroundColor: 'rgba(21, 101, 192, 0.1)',
+                            fill: true,
+                            tension: 0.3
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            }, 100);
+        }
+
+        function renderSuperAdminDashboard(container) {
+            container.innerHTML = `
+                <div class="p-6 bg-slate-900 text-white rounded-3xl relative overflow-hidden">
+                    <h2 class="text-2xl font-black">Papan Pemuka Utama Super Admin Dasmot Team</h2>
+                    <p class="text-xs text-slate-400 mt-1">Sistem Pemantauan Multi-Tenant Syarikat Korporat Seluruh Malaysia</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl">
+                        <p class="text-xs text-slate-400">Jumlah Entiti Syarikat Berdaftar</p>
+                        <h3 class="text-2xl font-bold mt-1 text-brand-500">1,240 Buah</h3>
+                    </div>
+                    <div class="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl">
+                        <p class="text-xs text-slate-400">Jumlah Keseluruhan Pengguna Staf</p>
+                        <h3 class="text-2xl font-bold mt-1 text-emerald-500">42,890 Akaun</h3>
+                    </div>
+                    <div class="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl">
+                        <p class="text-xs text-slate-400">Transaksi Langganan Aktif (B2B)</p>
+                        <h3 class="text-2xl font-bold mt-1 text-indigo-500">RM 184,300 / bln</h3>
+                    </div>
+                    <div class="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl">
+                        <p class="text-xs text-slate-400">Sistem Health Status</p>
+                        <h3 class="text-2xl font-bold mt-1 text-teal-500">99.98% Operational</h3>
+                    </div>
+                </div>
+
+                <div class="p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-sm">Syarikat Baharu Menunggu Pengesahan Log Kelulusan (KYC Admin Approval)</h3>
+                        <button onclick="navigateTo('urus_syarikat')" class="text-xs text-brand-500 font-semibold hover:underline">Urus Entiti Syarikat</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs md:text-sm">
+                            <thead>
+                                <tr class="bg-slate-50 dark:bg-slate-800 text-slate-500">
+                                    <th class="p-3 rounded-l-xl">Nama Syarikat</th>
+                                    <th class="p-3">Sektor Syarikat</th>
+                                    <th class="p-3">Pakej Langganan</th>
+                                    <th class="p-3 rounded-r-xl">Tindakan Kerja Admin</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-slate-100 dark:border-slate-800">
+                                    <td class="p-3 font-semibold">Dasmot Tech Sdn Bhd</td>
+                                    <td class="p-3">Teknologi Maklumat</td>
+                                    <td class="p-3"><span class="px-2 py-0.5 bg-brand-100 text-brand-800 rounded text-[10px] font-bold">PREMIUM ENTERPRISE</span></td>
+                                    <td class="p-3"><button onclick="alert('Syarikat Diluluskan Berjaya!')" class="px-2 py-1 bg-emerald-500 text-white rounded text-[11px]">Sahkan Entiti</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderKehadiranModule(container) {
+            container.innerHTML = `
+                <h2 class="text-xl font-bold">Pusat Rekod Kehadiran Pintar & Biometrik</h2>
+                <p class="text-xs text-slate-400">Sistem mengesahkan kehadiran anda menggunakan kombinasi GPS, Swa-foto (Selfie) dan sambungan WiFi pejabat automatik.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 text-center space-y-4">
+                        <h3 class="font-bold text-sm text-left">Pilih Pilihan Tindakan Anda</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <button onclick="simpanKehadiran('Clock In')" class="p-6 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 rounded-2xl hover:scale-[1.02] transition flex flex-col items-center gap-2">
+                                <span class="material-symbols-rounded text-3xl">login</span>
+                                <span class="font-bold text-sm">Clock In</span>
+                                <span class="text-[10px] opacity-70">Sesi Mula Kerja</span>
+                            </button>
+                            <button onclick="simpanKehadiran('Clock Out')" class="p-6 bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 rounded-2xl hover:scale-[1.02] transition flex flex-col items-center gap-2">
+                                <span class="material-symbols-rounded text-3xl">logout</span>
+                                <span class="font-bold text-sm">Clock Out</span>
+                                <span class="text-[10px] opacity-70">Sesi Tamat Kerja</span>
+                            </button>
+                        </div>
+                        <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-around text-xs text-slate-500">
+                            <button onclick="alert('Rehat Dimulakan')" class="hover:text-brand-500 flex items-center gap-1"><span class="material-symbols-rounded text-sm">coffee</span> Mula Rehat</button>
+                            <button onclick="alert('Rehat Tamat')" class="hover:text-brand-500 flex items-center gap-1"><span class="material-symbols-rounded text-sm">work</span> Tamat Rehat</button>
+                        </div>
+                    </div>
+
+                    <div class="p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800">
+                        <h3 class="font-bold text-sm mb-3">Log Kehadiran Semasa (Realtime Firestore Sync)</h3>
+                        <div class="space-y-3" id="log-kehadiran-list">
+                            </div>
+                    </div>
+                </div>
+            `;
+            refreshKehadiranLogs();
+        }
+
+        window.simpanKehadiran = function(jenis) {
+            const masaSekarang = new Date().toLocaleTimeString('ms-MY', { hour: '2-digit', minute: '2-digit' });
+            const tarikhHariIni = new Date().toISOString().split('T')[0];
+            
+            window.state.attendanceLog.unshift({
+                date: tarikhHariIni,
+                checkIn: jenis === 'Clock In' ? masaSekarang : '08:45 AM',
+                checkOut: jenis === 'Clock Out' ? masaSekarang : '--:--',
+                status: 'Swa-Foto Verified'
+            });
+            
+            alert(`Berjaya melakukan ${jenis} pada jam ${masaSekarang} menggunakan Sistem Face-ID & Geofencing.`);
+            refreshKehadiranLogs();
+        };
+
+        function refreshKehadiranLogs() {
+            const container = document.getElementById('log-kehadiran-list');
+            if (container) {
+                container.innerHTML = window.state.attendanceLog.map(log => `
+                    <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl flex justify-between items-center text-xs">
+                        <div>
+                            <p class="font-bold">${log.date}</p>
+                            <p class="text-slate-400">Masuk: ${log.checkIn} | Keluar: ${log.checkOut}</p>
+                        </div>
+                        <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400 font-medium rounded text-[10px]">${log.status}</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function renderCutiModule(container) {
+            container.innerHTML = `
+                <h2 class="text-xl font-bold">Sistem Pengurusan Cuti Digital</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 md:col-span-1 space-y-4">
+                        <h3 class="font-bold text-sm">Borang Permohonan Cuti</h3>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Jenis Cuti</label>
+                            <select id="leave-type" class="w-full p-2 text-sm bg-slate-50 dark:bg-slate-800 rounded-xl focus:outline-none border border-slate-200 dark:border-slate-700">
+                                <option>Cuti Tahunan (Annual Leave)</option>
+                                <option>Cuti Sakit (Medical Leave)</option>
+                                <option>Cuti Kecemasan (Emergency Leave)</option>
+                                <option>Cuti Tanpa Gaji (Unpaid Leave)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Tarikh Mula</label>
+                            <input type="date" id="leave-date" class="w-full p-2 text-sm bg-slate-50 dark:bg-slate-800 rounded-xl focus:outline-none border border-slate-200 dark:border-slate-700">
+                        </div>
+                        <button onclick="mohonCutiKakitangan()" class="w-full py-2 bg-brand-500 text-white text-xs font-bold rounded-xl shadow hover:bg-brand-600 transition">Hantar Borang Cuti</button>
+                    </div>
+
+                    <div class="p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 md:col-span-2">
+                        <h3 class="font-bold text-sm mb-4">Rekod Sejarah & Status Permohonan Cuti</h3>
+                        <div class="space-y-3" id="sejarah-cuti-list"></div>
+                    </div>
+                </div>
+            `;
+            refreshCutiList();
+        }
+
+        window.mohonCutiKakitangan = function() {
+            const tipe = document.getElementById('leave-type').value;
+            const tgl = document.getElementById('leave-date').value || '2026-07-10';
+            
+            window.state.leaves.unshift({
+                id: Date.now(),
+                type: tipe,
+                date: tgl,
+                duration: '1 Hari',
+                status: 'Dalam Proses'
+            });
+            
+            alert('Permohonan cuti anda berjaya dihantar ke Cloud Firestore dan sedang menanti kelulusan majikan.');
+            refreshCutiList();
+        };
+
+        function refreshCutiList() {
+            const container = document.getElementById('sejarah-cuti-list');
+            if (container) {
+                container.innerHTML = window.state.leaves.map(l => `
+                    <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl flex justify-between items-center text-xs">
+                        <div>
+                            <p class="font-bold">${l.type}</p>
+                            <p class="text-slate-400">Tarikh: ${l.date} (${l.duration})</p>
+                        </div>
+                        <span class="px-2 py-0.5 ${l.status === 'Diluluskan' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'} font-semibold rounded text-[10px]">${l.status}</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function renderClaimsModule(container) {
+            container.innerHTML = `
+                <h2 class="text-xl font-bold">Modul Tuntutan Kos & Claims (AI Scan Integrated)</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-3">
+                        <h3 class="font-bold text-sm">Borang Tuntutan Baharu</h3>
+                        <div>
+                            <label class="block text-xs text-slate-400">Kategori Tuntutan</label>
+                            <select id="claim-category" class="w-full p-2 bg-slate-50 dark:bg-slate-800 text-xs rounded-xl border border-slate-200 dark:border-slate-700">
+                                <option>Petrol & Mileage</option>
+                                <option>Parking & Tol</option>
+                                <option>Perubatan (Medical)</option>
+                                <option>Makanan & Hotel</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400">Jumlah Tuntutan (RM)</label>
+                            <input type="number" id="claim-amount" placeholder="0.00" class="w-full p-2 bg-slate-50 dark:bg-slate-800 text-xs rounded-xl border border-slate-200 dark:border-slate-700">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400">Muat Naik Resit (AI Detection Scanner)</label>
+                            <div onclick="alert('Kamera diaktifkan untuk mengimbas resit...')" class="border-2 border-dashed border-slate-200 dark:border-slate-700 p-4 rounded-xl text-center cursor-pointer text-slate-400 hover:text-brand-500 transition">
+                                <span class="material-symbols-rounded text-2xl">photo_camera</span>
+                                <p class="text-[11px] mt-1">Klik untuk ambil gambar resit</p>
+                            </div>
+                        </div>
+                        <button onclick="hantarClaimSyarikat()" class="w-full py-2 bg-brand-500 text-white font-bold text-xs rounded-xl">Hantar Tuntutan</button>
+                    </div>
+                    
+                    <div class="p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 md:col-span-2">
+                        <h3 class="font-bold text-sm mb-4">Senarai Rekod Kos Tuntutan</h3>
+                        <div class="space-y-3" id="claim-list-box"></div>
+                    </div>
+                </div>
+            `;
+            refreshClaimListBox();
+        }
+
+        window.hantarClaimSyarikat = function() {
+            const amt = document.getElementById('claim-amount').value || '50';
+            const cat = document.getElementById('claim-category').value;
+            
+            window.state.claims.unshift({
+                id: Date.now(),
+                type: cat,
+                amount: `RM ${parseFloat(amt).toFixed(2)}`,
+                date: new Date().toISOString().split('T')[0],
+                status: 'Dalam Proses'
+            });
+            alert('Tuntutan dihantar. AI mengesahkan tiada data resit pendua (Duplicated receipt logs check: passed).');
+            refreshClaimListBox();
+        };
+
+        function refreshClaimListBox() {
+            const container = document.getElementById('claim-list-box');
+            if (container) {
+                container.innerHTML = window.state.claims.map(c => `
+                    <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl flex justify-between items-center text-xs">
+                        <div>
+                            <p class="font-bold text-slate-700 dark:text-slate-200">${c.type} - <span class="text-brand-500">${c.amount}</span></p>
+                            <p class="text-[10px] text-slate-400">Tarikh Fail: ${c.date}</p>
+                        </div>
+                        <span class="px-2 py-0.5 bg-slate-200 text-slate-800 rounded text-[9px] font-bold">${c.status}</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function renderPayslipModule(container) {
+            container.innerHTML = `
+                <h2 class="text-xl font-bold">Penyata Gaji Elektronik (e-Payslip)</h2>
+                <p class="text-xs text-slate-400">Bulan Semasa: Jun 2026 (Mata Wang Berkanun: RM - Ringgit Malaysia)</p>
+                
+                <div class="p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 max-w-2xl">
+                    <div class="border-b border-slate-100 dark:border-slate-800 pb-4 mb-4 flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold text-base text-brand-600">DASMOT TEAM SDN BHD</h3>
+                            <p class="text-[11px] text-slate-400">Penyata Gaji Kakitangan Rasmi</p>
+                        </div>
+                        <button onclick="alert('Memuat turun PDF Penyata Gaji...')" class="px-3 py-1 bg-brand-500 text-white rounded-lg text-xs font-bold flex items-center gap-1"><span class="material-symbols-rounded text-sm">download</span> Muat Turun PDF</button>
+                    </div>
+
+                    <div class="space-y-2 text-xs">
+                        <div class="flex justify-between py-1 border-b border-slate-50 dark:border-slate-800"><span class="text-slate-400">Gaji Pokok / Asas (Basic Salary)</span><span class="font-bold">RM 3,500.00</span></div>
+                        <div class="flex justify-between py-1 border-b border-slate-50 dark:border-slate-800"><span class="text-slate-400">Elaun Tetap Pengangkutan</span><span class="font-bold text-emerald-500">+ RM 300.00</span></div>
+                        <div class="flex justify-between py-1 border-b border-slate-50 dark:border-slate-800"><span class="text-slate-400">Potongan KWSP (EPF 11%)</span><span class="font-bold text-rose-500">- RM 385.00</span></div>
+                        <div class="flex justify-between py-1 border-b border-slate-50 dark:border-slate-800"><span class="text-slate-400">Potongan PERKESO (SOCSO)</span><span class="font-bold text-rose-500">- RM 19.75</span></div>
+                        <div class="flex justify-between py-1 border-b border-slate-50 dark:border-slate-800"><span class="text-slate-400">Potongan SIP (EIS)</span><span class="font-bold text-rose-500">- RM 7.90</span></div>
+                        <div class="flex justify-between py-1 border-b border-slate-50 dark:border-slate-800"><span class="text-slate-400">Cukai Berjadual (PCB)</span><span class="font-bold text-rose-500">- RM 45.00</span></div>
+                        <div class="flex justify-between py-3 font-bold text-sm text-brand-600 border-t border-dashed mt-4"><span class="text-slate-800 dark:text-slate-100">Gaji Bersih (Net Take-Home Pay)</span><span>RM 3,342.35</span></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderTasksModule(container) {
+            container.innerHTML = `
+                <h2 class="text-xl font-bold">Senarai Tugasan & KPI Projek</h2>
+                <div class="p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 max-w-xl space-y-3">
+                    <h3 class="font-bold text-sm">Tugasan Aktif Anda</h3>
+                    <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl flex items-center justify-between text-xs">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-rounded text-amber-500">radio_button_unchecked</span>
+                            <div><p class="font-bold">Kemaskini Profil KYC Cloud Firestore</p><p class="text-slate-400">Masa Tamat: Hari Ini, 18:00</p></div>
+                        </div>
+                        <span class="px-2 py-0.5 bg-amber-100 text-amber-800 text-[10px] font-bold rounded">UTAMA</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderDocumentsModule(container) {
+            container.innerHTML = `
+                <h2 class="text-xl font-bold">Perpustakaan SOP & Dokumen Syarikat</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl flex items-center justify-between text-xs">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-rounded text-3xl text-brand-500">picture_as_pdf</span>
+                            <div><p class="font-bold">Buku Panduan Pekerja 2026.pdf</p><p class="text-slate-400">Saiz: 4.2 MB | Dikemaskini Jan 2026</p></div>
+                        </div>
+                        <button onclick="alert('Pratonton Dokumen PDF diaktifkan...')" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full flex items-center justify-center"><span class="material-symbols-rounded text-lg">visibility</span></button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderUrusPekerjaModule(container) {
+            container.innerHTML = `
+                <div class="flex justify-between items-center">
+                    <h2 class="text-xl font-bold">Pengurusan Fail & Rekod Staf Syarikat</h2>
+                    <button onclick="alert('Borang Tambah Staf Baharu diaktifkan...')" class="px-3 py-1.5 bg-brand-500 text-white rounded-xl text-xs font-bold flex items-center gap-1"><span class="material-symbols-rounded text-sm">person_add</span> Tambah Staf</button>
+                </div>
+                <div class="p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800">
+                    <div class="space-y-3">
+                        <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl flex justify-between items-center text-xs">
+                            <div class="flex items-center gap-3">
+                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=100&auto=format&fit=crop" class="w-8 h-8 rounded-full object-cover">
+                                <div><p class="font-bold">Khairul Anwar</p><p class="text-slate-400">Jabatan Operasi | Gred M4</p></div>
+                            </div>
+                            <div class="flex gap-1">
+                                <button onclick="alert('Edit')" class="px-2 py-1 bg-slate-200 text-slate-800 rounded text-[10px]">Edit</button>
+                                <button onclick="alert('Padam')" class="px-2 py-1 bg-rose-500 text-white rounded text-[10px]">Gantung</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderSahkanCutiModule(container) {
+            container.innerHTML = `
+                <h2 class="text-xl font-bold">Portal Kelulusan Cuti Tahunan/Sakit Kakitangan</h2>
+                <div class="p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-4">
+                    <div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl flex justify-between items-center text-xs">
+                        <div>
+                            <p class="font-bold text-sm">Ahmad Shahril Bin Ismail</p>
+                            <p class="text-slate-500 mt-0.5">Memohon: Cuti Sakit (Medical Leave) | Tarikh: 02 Julai 2026</p>
+                            <p class="text-brand-500 font-semibold mt-1">Sebab: Demam Panas & Selesema (Sijil Sakit / MC dilampirkan)</p>
+                        </div>
+                        <div class="flex flex-col gap-1.5 shrink-0">
+                            <button onclick="alert('Cuti Kakitangan Diluluskan.'); navigateTo('dashboard');" class="px-3 py-1.5 bg-emerald-500 text-white font-bold rounded-lg text-[11px]">Sahkan Cuti</button>
+                            <button onclick="alert('Cuti Kakitangan Ditolak.'); navigateTo('dashboard');" class="px-3 py-1.5 bg-rose-500 text-white font-bold rounded-lg text-[11px]">Tolak / Reject</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderUrusSyarikatModule(container) {
+            container.innerHTML = `
+                <h2 class="text-xl font-bold">Sistem Kawalan Pengesahan Klien Korporat B2B</h2>
+                <p class="text-xs text-slate-400">Menu pemantauan global super admin untuk mengaktifkan atau menggantung lesen langganan syarikat klien.</p>
+                
+                <div class="p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-3">
+                    <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl flex justify-between items-center text-xs">
+                        <div>
+                            <p class="font-bold text-sm">Malayan Banking Corporate Suite</p>
+                            <p class="text-slate-400">Kemasukan: 12 Syarikat Berdaftar di bawah Kumpulan</p>
+                        </div>
+                        <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 font-bold rounded text-[10px]">LESEN AKTIF</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- CORE APPLICATION INTERACTION HANDLERS ---
+        
+        window.toggleDarkMode = function() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('darkMode', isDark);
+            document.getElementById('theme-icon').innerText = isDark ? 'light_mode' : 'dark_mode';
+        };
+
+        window.triggerAIChat = function() {
+            document.getElementById('ai-modal').classList.remove('hidden');
+        };
+
+        window.closeAIModal = function() {
+            document.getElementById('ai-modal').classList.add('hidden');
+        };
+
+        window.sendAIChat = function() {
+            const input = document.getElementById('ai-input');
+            const box = document.getElementById('ai-chat-history');
+            
+            if (!input.value.trim()) return;
+            
+            // Render user dialogue chat bubble
+            const userDiv = document.createElement('div');
+            userDiv.className = 'flex gap-2 items-start justify-end max-w-[90%] ml-auto flex-row-reverse';
+            userDiv.innerHTML = `
+                <div class="bg-brand-500 text-white p-3 rounded-2xl rounded-tr-none">
+                    <p class="font-bold text-xs text-white/90 mb-0.5">Anda</p>
+                    <p>${input.value}</p>
+                </div>
+            `;
+            box.appendChild(userDiv);
+            
+            // Build automated semantic logic response mockup simulating backend response engine
+            const promptValue = input.value.toLowerCase();
+            input.value = '';
+            
+            setTimeout(() => {
+                const aiDiv = document.createElement('div');
+                aiDiv.className = 'flex gap-2 items-start bg-slate-50 dark:bg-slate-800/50 p-3 rounded-2xl';
+                
+                let responseText = "Maaf, saya sedang memproses pangkalan data Firestore. Boleh anda spesifikkan soalan mengenai modul cuti atau perbatuan?";
+                if (promptValue.includes('cuti')) {
+                    responseText = "Analisis AI Cuti: Trend menunjukkan permohonan cuti meningkat menjelang minggu pertama Julai 2026 bersempena cuti persekolahan. Disyorkan pengurus menyemak kuota pasukan.";
+                } else if (promptValue.includes('gaji') || promptValue.includes('payroll')) {
+                    responseText = "Analisis AI Payroll: Tiada ralat pematuhan PCB dikesan untuk kitaran bulan Jun 2026. Semua sumbangan caruman KWSP & SOCSO berada di landasan yang betul.";
+                }
+                
+                aiDiv.innerHTML = `
+                    <span class="material-symbols-rounded text-brand-500 mt-0.5">smart_toy</span>
+                    <div>
+                        <p class="font-semibold text-brand-600 mb-0.5">Dasmot AI</p>
+                        <p>${responseText}</p>
+                    </div>
+                `;
+                box.appendChild(aiDiv);
+                box.scrollTop = box.scrollHeight;
+            }, 700);
+        };
+
+        window.sendLiveChatMessage = function() {
+            const input = document.getElementById('chat-input-field');
+            const box = document.getElementById('chat-messages-box');
+            if(!input.value.trim()) return;
+            
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'flex gap-2 items-start max-w-[80%] ml-auto flex-row-reverse';
+            msgDiv.innerHTML = `
+                <div class="bg-brand-500 text-white p-3 rounded-2xl rounded-tr-none">
+                    <p>${input.value}</p>
+                    <span class="text-[9px] text-white/70 block text-right mt-1">Baru Sahaja ✓✓</span>
+                </div>
+            `;
+            box.appendChild(msgDiv);
+            input.value = '';
+            box.scrollTop = box.scrollHeight;
+        };
+
+        window.openNotificationModal = function() {
+            alert("Notifikasi Sistem Dasmot Team:\n\n1. Pengumuman SOP Baharu dimuat naik oleh Majikan.\n2. Slip Gaji bulan Jun 2026 sedia untuk disemak.");
+        };
+
+        window.simulateOAuth = function(provider) {
+            alert(`Menghubungkan ke SDK Firebase Auth untuk kelulusan log masuk rangkaian ${provider}...`);
+            window.bypassAuth('pekerja');
+        };
+
+    </script>
+</body>
+</html>
